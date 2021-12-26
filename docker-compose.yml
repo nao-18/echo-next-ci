@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./docker/app/dockerfile
+    volumes:
+      - ./server:/go/src/github.com/nao-18/echo-next-ci
+    tty: true
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - "5430:5432"
+    environment:
+      POSTGRES_DB: echo_ci_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+      - ./postgres:/var/lib/postgresql/data
+    restart: always
+    tty: true
+
+  proxy:
+    container_name: proxy
+    build:
+      context: .
+      dockerfile: ./docker/nginx/dockerfile
+    ports:
+      - "8081:80"
+    depends_on:
+      - app
+
+  node:
+    container_name: node
+    build:
+      context: .
+      dockerfile: ./docker/node/dockerfile
+    volumes:
+      - ./front:/usr/src/app
+    command: yarn dev
+    ports:
+      - "3000:3000"
+    stdin_open: true

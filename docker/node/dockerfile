@@ -1,0 +1,4 @@
+FROM node:14.18.0
+
+WORKDIR /usr/src/app
+RUN npm install -g create-next-app && yarn
