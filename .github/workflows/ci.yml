@@ -53,7 +53,7 @@ jobs:
           cd front
           yarn lint
 
-      - name: Test Next.js app
-        run: |
-          cd front
-          yarn test
+      # - name: Test Next.js app
+      #   run: |
+      #     cd front
+      #     yarn test
